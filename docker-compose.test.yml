@@ -1,0 +1,55 @@
+services:
+  api: &api
+    build:
+      context: .
+      args:
+        APP_ENV: development
+    image: membercenter-api
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./:/code/
+    env_file: .env
+
+    environment:
+      - VIRTUAL_HOST=membercenter-api.dev.archdaily.com
+    command: ["newrelic-admin", "run-program", "uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000","--workers", "2", "--reload"]
+
+  api-test:
+    <<: *api
+    command: /bin/bash
+    ports: []
+    volumes:
+      - ./:/code/
+
+  membercenter-redis:
+    image: redis:6.2.7-alpine
+    ports:
+      - "6379:6379"    
+
+  clickhouse:
+    image: clickhouse/clickhouse-server
+    container_name: my-clickhouse-container    
+    ports:
+      - "8123:8123"
+      - "9000:9000"
+      - "9009:9009"
+    volumes:
+      - clickhousedata:/var/lib/clickhouse/
+    ulimits:
+      nofile:
+        soft: 262144
+        hard: 262144
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8123"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
+volumes:
+  dbdata:
+  clickhousedata:
+
+networks:
+  default:
+    name: nginxproxy_archdaily

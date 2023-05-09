@@ -1,0 +1,100 @@
+inherits:
+  - strictness_veryhigh
+
+ignore-patterns:
+  - ^setup.py$
+
+pylint:
+  disable:
+    - import-self
+    - import-error
+    - too-many-instance-attributes
+    - consider-merging-isinstance
+    - too-many-return-statements
+    - simplifiable-if-statement
+    - unnecessary-comprehension
+    - too-many-lines #module line limit
+    - unused-argument
+    - inconsistent-return-statements #Either all return statements in a function should return an expression, or none of them should.
+    - unexpected-keyword-arg
+    - super-init-not-called
+    - arguments-differ
+    - too-many-locals
+    - unused-import
+    - trailing-whitespace
+    - missing-final-newline
+    - too-few-public-methods
+    - too-many-public-methods
+    - deprecated-lambda
+    - bad-builtin
+    - star-args
+    - global-statement
+    - assignment-from-none
+    - unused-format-string-key
+    - no-self-argument
+    - unnecessary-pass
+    - W5103
+    - W0622
+    - W0223 #is abstract class but is not overridden
+    - W0106 #expression not assigned
+    - C0200 #consider using enumerate
+    - C0103 #doesn't conform with naming style
+    - R0913 #too-many-arguments
+    - R0201 #no-self-use / method could be a function
+    - R1714 #consider-using-in
+    - R1705 #(no-else-return)
+    - W0703 #Catching too general exception
+    - C0114 #missing module docstring
+    - C0115 #missing class docstring error
+    - C0116 #missing function docstring error
+    - E1120 #no-value-for-parameter
+    - E1136 #unsubscriptable object - (union error for python 3.9)
+    - C0326 #bad white space (required by Black)
+    - C0330 #"wrong hanging indentation before block" (required by Black)
+    - W0621 #redefined-outer-name
+    - W0108 #unnecessary-lambda
+    - W0123 #use of eval
+
+  options:
+    max-locals: 15
+    max-returns: 6
+    max-branches: 15
+    max-statements: 60
+    min-public-methods: 1
+    max-public-methods: 20
+    max-line-length: 100
+
+pyflakes:
+  disable:
+    - F401
+
+pycodestyle:
+  options:
+    max-line-length: 100
+  disable:
+    - N806 #should be lowercase
+    - N803 #should be lowercase
+    - N802 #should be lowercase
+    - N801 #class names should use CapWords convention
+    - E203 #whitespace before:
+    - E304
+    - E265
+    - E266
+    - E501
+    - W291
+    - W292
+    - W391
+    - W503
+    - W504
+    - N811
+    - N812
+    - N813
+    - N814
+    - N805
+    - E711 #comparison to None used in queries
+    - E712 #comparison to None used in queries
+
+pydocstyle:
+  disable:
+    - D400
+    - D401

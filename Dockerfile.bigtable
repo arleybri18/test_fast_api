@@ -1,0 +1,18 @@
+FROM google/cloud-sdk:410.0.0
+LABEL maintainer "DAAily Ops Team <ops@daaily.com>"
+# ENV CLOUDSDK_CORE_DISABLE_PROMPTS 1
+# This variable is required for local cbt tool
+ENV BIGTABLE_EMULATOR_HOST=0.0.0.0:8086
+ENV BIGTABLE_PROJECT=dev
+ENV BIGTABLE_INSTANCE=dev
+
+# update the os repositories and install some utils packages (to testing and troubleshoot inside docker image containers)
+RUN apt-get update && \
+    apt-get upgrade -y && \
+    apt-get install build-essential bash gcc libpq-dev curl procps locales locales-all wget net-tools tar bzip2 gzip htop pydf telnet -y && \
+    # cleaning up unused files
+    apt-get purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false && \
+    rm -rf /var/lib/apt/lists/*
+
+# configuring the .cbtrc file to store our conf env variables
+RUN echo project=${BIGTABLE_PROJECT:-dev} >> ~/.cbtrc && echo instance=${BIGTABLE_INSTANCE:-dev} >> ~/.cbtrc

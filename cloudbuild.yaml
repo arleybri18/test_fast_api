@@ -1,0 +1,61 @@
+steps:
+  - name: gcr.io/cloud-builders/docker
+    args:
+    - build
+    - -t
+    - ${_LOCATION}-docker.pkg.dev/${PROJECT_ID}/${_REPO_NAME}/base:${SHORT_SHA}
+    - --build-arg
+    - APP_ENV=${_APP_ENV}
+    - .
+
+  - name: gcr.io/cloud-builders/docker
+    args:
+    - push
+    - ${_LOCATION}-docker.pkg.dev/${PROJECT_ID}/${_REPO_NAME}/base:${SHORT_SHA}
+
+  - name: gcr.io/cloud-builders/gcloud
+    args:
+    - run
+    - deploy
+    - ${_REPO_NAME}
+    - --service-account
+    - ${_SERVICE_ACCOUNT}
+    - --image
+    - ${_LOCATION}-docker.pkg.dev/${PROJECT_ID}/${_REPO_NAME}/base:${SHORT_SHA}
+    - --region
+    - ${_LOCATION}
+    - --platform
+    - managed
+    - --vpc-connector
+    - membercenter-api-staging
+    - --memory
+    - 4Gi
+    - --min-instances
+    - "${_MIN_INSTANCES}"
+    - --max-instances
+    - "${_MAX_INSTANCES}"
+    - --timeout
+    - 1200s
+    - --allow-unauthenticated
+    - --port
+    - "8000"
+    - --command
+    - newrelic-admin
+    - --args=run-program,uvicorn,app.main:app,--host,0.0.0.0
+    - --set-env-vars
+    - APP_ENV=${_APP_ENV},${_NEW_RELIC_VARS}
+    - --set-secrets
+    - /secrets/.env=${_APP_SECRET}:latest,NEW_RELIC_LICENSE_KEY=NEW_RELIC_LICENSE_KEY:latest
+
+substitutions:
+  _LOCATION: europe-west3
+  _REPO_NAME: ${REPO_NAME}${_APP_ENV}
+  _NEW_RELIC_VARS: >-
+    NEW_RELIC_CONFIG_FILE=./app/config/initializers/newrelic.ini,
+    NEW_RELIC_ENVIRONMENT=${_APP_ENV},
+    NEW_RELIC_APP_NAME=${_REPO_NAME},
+    NEW_RELIC_LOG_LEVEL=debug
+
+options:
+  dynamic_substitutions: true
+  logging: CLOUD_LOGGING_ONLY

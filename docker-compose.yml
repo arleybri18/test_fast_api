@@ -1,0 +1,42 @@
+services:
+  api: &api
+    build:
+      context: .
+      args:
+        APP_ENV: development
+    image: test-api
+    ports:
+      - "8002:8002"
+    volumes:
+      - ./:/code/
+    env_file: .env
+
+    environment:
+      - VIRTUAL_HOST=test-api.dev.archdaily.com
+    command: ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8002","--workers", "2", "--reload"]
+
+  api-test:
+    <<: *api
+    command: /bin/bash
+    ports: []
+    volumes:
+      - ./:/code/
+
+  db:
+    image: mysql:5.7-debian
+    environment:
+      MYSQL_ROOT_PASSWORD: secretpassword
+      MYSQL_DATABASE: test_database
+    command: --skip-ssl --innodb-lru-scan-depth=128
+    ports:
+      - "3306:3306"
+    volumes:
+      - ./data/docker-entrypoint-initdb.d:/docker-entrypoint-initdb.d
+      - dbdata:/var/lib/mysql
+
+volumes:
+  dbdata:
+
+networks:
+  default:
+    name: my_network
