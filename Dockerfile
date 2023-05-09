@@ -1,6 +1,6 @@
 # syntax=docker/dockerfile:1.2
 FROM python:3.11-slim
-LABEL maintainer "DAAily Ops Team <ops@daaily.com>"
+LABEL maintainer "Yony Brinez"
 
 # update the os repositories and install some utils packages (to testing and troubleshoot inside docker image containers)
 RUN apt-get update && \
